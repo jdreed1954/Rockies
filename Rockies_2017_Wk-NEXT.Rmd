@@ -1,0 +1,500 @@
+---
+title: 'Rockies 2017 - Week #Next'
+author: "Jim Reed (jdreed@q.com)"
+date: "May 1, 2017"
+output:
+  pdf_document: default
+  html_notebook: default
+  html_document: default
+  fontsize: 12pt
+---
+\centerline{\includegraphics[width=6.0in]{images/nolan-arenado-ap2.jpg}}
+
+## Introduction
+There was an article in the Friday Denver Post (April 21) titled __Rockies confident their strong start is sustainable__.  You see, the Rockies have been in this position before, starting strong in April only to fall into a slump and finishing with fewer than 81 wins.  The theory this year is that the Rockies are winning partially on the strength of their pitching; an ingredient we have not experienced before.  Strangely, the Rockies bats have not been hot, yet.  With the eventual warming-up of Story and Gonzalez and with the continued strength of the of the order, there may be reason to look forward to better than .500 season.
+
+This week we will again continue to develop a Rockies Dashboard of performance and progress for the season.  Presented here are the following:
+
+* National and American League Standings
+* Game-by-Game Results of the past week.
+* Colorado Rockies batting statistics in rank order.
+* Pythagorean Theorem prediction of the number of wins by end of the season based on the number of runs scored (R) and the number of runs allowed (RA).
+* Colorado Rockies Pitching Statistics
+* Rockies Fielding Statistics **New this week**
+
+The source data for this article can be found at URL [http://baseball-reference.com](http://baseball-reference.com).
+
+Let me know what other special interest statistics you might like to see.  Remember to refer to the Glossaries in at the end of the document if are unfamiliar with one or more of the statistic abbreviations in the tables.
+
+
+```{r Init, echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(lubridate)
+library(Lahman)
+library(XML)
+library(RCurl)
+library(rlist)
+
+source("../Baseball/Baseball_Functions.r")
+```
+
+
+\newpage
+
+# [National League Standings](http://www.baseball-reference.com/leagues/NL/2017-standings.shtml#expanded_standings_W::none)
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+theurl <- getURL("http://www.baseball-reference.com/leagues/NL/2017-standings.shtml#expanded_standings_W::none")
+tables <- readHTMLTable(theurl)
+tables <- list.clean(tables, fun = is.null, recursive = FALSE)
+n.rows <- unlist(lapply(tables, function(t) dim(t)[1]))
+knitr::kable(tables$standings_E, caption = "NL East Standings")
+knitr::kable(tables$standings_C, caption = "NL Central Standings")
+knitr::kable(tables$standings_W, caption = "NL West Standings")
+
+```
+
+\newpage
+
+# [American League Standings](http://www.baseball-reference.com/leagues/AL/2017-standings.shtml#expanded_standings_W::none)
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, results = 'asis'}
+
+ALurl <- getURL("http://www.baseball-reference.com/leagues/AL/2017-standings.shtml#expanded_standings_W::none")
+ALStandings <- readHTMLTable(ALurl)
+ALStandings <- list.clean(ALStandings, fun = is.null, recursive = FALSE)
+n.rows <- unlist(lapply(ALStandings, function(t) dim(t)[1]))
+knitr::kable(ALStandings$standings_E, caption = "AL East Standings")
+knitr::kable(ALStandings$standings_C, caption = "AL Central Standings")
+knitr::kable(ALStandings$standings_W, caption = "AL West Standings")
+```
+
+
+
+
+
+\newpage
+
+# Rockies Game-by-Game Schedule/Results
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+GBG17 <- getRockiesGBG(2017)
+knitr::kable(GBG17)
+```
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+WINS <- sum(GBG17$`W/L` == "W")
+LOSSES <-  sum(GBG17$`W/L` == "L")
+WPCT <- WINS/(WINS + LOSSES)
+TotalR <- sum(as.integer(GBG17$R))
+TotalRA <- sum(as.integer(GBG17$RA))
+
+# Produce Win/Loss Margin Plot
+
+GBG17$Date <- trimws(GBG17$Date)
+D <- tibble(Date = GBG17$Date, Year = 2017, WLMargin = GBG17$R - GBG17$RA, 
+            DN = GBG17$`D/N`, HA = GBG17$`H/A`) %>%
+            separate(Date, into = c("Month", "Day"), sep =" ")
+
+D <- mutate(D, WL_Margin = ifelse(D$WLMargin < 0, "Loss", "Win"))       
+
+D$Month <- match(tolower(D$Month), tolower(month.abb))
+D$Date <- with(D, as.Date(paste(Year, Month, Day, sep = "/")))
+
+ggplot(D, aes(Date, WLMargin, fill = WL_Margin)) + 
+  geom_bar(stat = "identity")
+
+```
+
+\newpage
+
+# 2016 Win Loss
+
+```{r}
+GBG16 <- getRockiesGBG(2016)
+knitr::kable(GBG16)
+```
+
+```{r}
+# Produce Win/Loss Margin Plot
+
+GBG16$Date <- trimws(GBG16$Date)
+D <- tibble(Date = GBG16$Date, Year = 2016, WLMargin = GBG16$R - GBG16$RA, 
+            DN = GBG16$`D/N`, HA = GBG16$`H/A`)
+D <- D %>% separate(Date, into = c("Month", "Day"), sep =" ")
+D <- mutate(D, WL_Margin <-  ifelse(D$WLMargin < 0, "Loss", "Win"))       
+D$Month <- match(tolower(D$Month), tolower(month.abb))
+D$Date <- with(D, as.Date(paste(Year, Month, Day, sep = "/")))
+
+ggplot(D, aes(Date, WLMargin, fill = WL_Margin)) + 
+  geom_bar(stat = "identity")
+```
+
+
+The Rockies current record is `r WINS` Wins and `r LOSSES` Losses.  So far, the Rockies have scored `r TotalR` runs and have had `r TotalRA` runs scored against them.
+
+\newpage
+
+# 2017 Colorado Rockies Batting Statistics (non-pitchers)
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+burl <- 
+  getURL("http://www.baseball-reference.com/teams/COL/2017.shtml#team_batting::none")
+
+  TeamStats <- readHTMLTable(burl)
+  TeamStats <- list.clean(TeamStats, fun = is.null, recursive = FALSE)
+  TeamBatting <- as_tibble(TeamStats$team_batting) %>%
+       separate(Name, into = c("First", "Name"), sep =" ")
+TEAMB <- TeamBatting %>% 
+  select(c(1,2,4,5,6,8,9,10,11,12,13, 14, 15, 16, 17)) %>%   
+  filter(Rk != "Rk" & Pos != "P")
+knitr::kable(TEAMB, caption = "Rockies Batting Statistics (1 of 2).")
+
+TEAMB <- TeamBatting %>% 
+  select(c(1,2,4,5,18,19,20,21,22,23:29)) %>%   
+  filter(Rk != "Rk" & Pos != "P")
+knitr::kable(TEAMB, caption = "Rockies Batting Statistics (2 of 2).")
+```
+
+\newpage
+
+# Pythagorean Win-Loss Theorem
+
+> The Pythagorean Win-Loss Theorem of Baseball is a creation of Bill James which relates the number of runs a team has scored (R) and surrendered (RA) to its actual winning percentage, based on the idea that runs scored compared to runs allowed is a better indicator of a team's (future) performance than a team's actual winning percentage. Feb 20, 2015
+
+James put this formula forward with exponent of 2, thus the similarity to the actual Pythagorean Theorem.  Statisticians have postulated that an exponent of 1.81 or 1.83 better fits historical data.  Here is the generalized formula:
+
+$$ predicted W\% = \frac{R^k}{R^k+RA^k}   $$
+```{r PredWin, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+# Build Table of Pythagorean Win Predictions for 2017
+PredictedWins <- tibble(
+  `Wins (k=1.81)` = round(TotalR^1.81/(TotalR^1.81+TotalRA^1.81)*162),
+  `Wins (k=1.83)` = round(TotalR^1.83/(TotalR^1.83+TotalRA^1.83)*162),
+  `Wins (k=2.00)` = round(TotalR^2.00/(TotalR^2.00+TotalRA^2.00)*162))
+```
+
+
+
+# Rockies Predicted Season Wins using Bill James' "Pythagorean" Formula
+
+So, using the commonly used values of k, the Rockies predicted wins for the 2017 season look good but not as good as it could be.  As the season progresses and more R/RA history is generated, we will keep an eye on these numbers.
+
+```{r Pred, echo=FALSE, message=FALSE, warning=FALSE, results = 'asis'}
+knitr::kable(PredictedWins, caption = "Predicted Wins for Entire 2017 Season")
+```
+
+\newpage
+
+# Rockies Pitching
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+
+PitchUrl <- 
+  getURL("http://www.baseball-reference.com/teams/COL/2017.shtml#team_pitching::none")
+
+  PitchStats <- readHTMLTable(PitchUrl)
+  PitchStats <- list.clean(PitchStats, fun = is.null, recursive = FALSE)
+  TeamPitching <- as_tibble(TeamStats$team_pitching) %>%
+       separate(Name, into = c("First", "Name"), sep =" ")
+
+  TEAMP <- TeamPitching %>%   
+  filter(Rk != "Rk") %>%
+  select(c(1,2, 4, 5:18))
+knitr::kable(TEAMP, caption = "Rockies pitching statistics (1 of 2).")
+
+TEAMP <- TeamPitching %>%
+  filter(Rk != "Rk")  %>%
+  select(c(1,2, 4, 19:30))
+knitr::kable(TEAMP, caption = "Rockies pitching statistics (2 of 2).")
+
+```
+
+\newpage
+
+# Team Fielding -- Totals
+
+```{r Fielding, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+FSTATS <- read_csv("Rockies_2017_Fielding.csv")
+# Remove NA and replace with Zero
+FSTATS[is.na(FSTATS)] <- 0
+TEAMF <- FSTATS %>%
+  select(c(2, 4, 5:17)) %>%
+  filter(Name != "0")
+knitr::kable(TEAMF, caption = "Rockies fielding statistics (1 of 2).")
+```
+
+\newpage
+
+# Team Fielding -- Totals (continued)
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+TEAMF <- FSTATS %>%
+  select(c(2, 4, 5, 18:26,28)) %>%
+  filter(Name != "0")
+knitr::kable(TEAMF, caption = "Rockies fielding statistics (2 of 2).")
+```
+
+\newpage
+
+# MLB Attendance for 2016 (work in progress)
+
+```{r Attendance2016, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+getAttendance <- function(Yr) {
+  theurl <-  paste(
+    "http://www.baseball-reference.com/leagues/MLB/",
+    Yr,
+    "-misc.shtml#teams_miscellaneous::none",
+    sep = ""
+  )
+  AttUrl <- getURL(theurl)
+  
+  tables <- readHTMLTable(AttUrl, stringsAsFactors = FALSE)
+  tables <- list.clean(tables, fun = is.null, recursive = FALSE)
+  
+  
+  Att <- as_tibble(tables$teams_miscellaneous)
+  # Fix up the column names
+  Att <-  rename(Att,
+    Attend.G = `Attend/G`,
+    Num.HOF = `#HOF`,
+    Num.AS = `#A-S`,
+    Num.at.AS = `#a-tA-S`,
+    Est.Payroll = `Est. Payroll`,
+    SuccPct = `Succ%`
+  )
+  
+  Att$Attendance <-
+    with(Att, Attendance <-  sub("\\$", "", Attendance)) %>%
+    gsub(",", "", .) %>% sub("0-", "0", .)
+  Att$Attend.G <-
+    with(Att, Attend.G <-  sub("\\$", "", Attend.G)) %>%
+    gsub(",", "", .) %>% sub("0-", "0", .)
+  Att$Est.Payroll <-
+    with(Att, Est.Payroll <-  sub("\\$", "", Est.Payroll)) %>%
+    gsub(",", "", .) %>% sub("0-", "0", .)
+  
+  # Now we convert character columns corresponding to numbers.
+  Att <- as_tibble(type_convert(Att))
+  
+  
+  return(Att)
+  
+}
+
+c.Teams <- read_csv("../Baseball/Teams_Current.csv", trim_ws = TRUE)
+
+Yr  <-  2016
+Att <- getAttendance(Yr)
+Att <- select(Att, Tm, Attendance, Attend.G) %>% 
+       mutate(TeamName = "", League = "", Division = "") # Add Emtpy Fields
+
+for (i in 1:nrow(Att)) {
+  Att$TeamName[i]  <-  filter(c.Teams, Team.Abr == Att$Tm[i])$Team
+  Att$League[i]  <-  filter(c.Teams, Team.Abr == Att$Tm[i])$League
+  Att$Division[i]  <-  filter(c.Teams, Team.Abr == Att$Tm[i])$Division
+}
+
+AttTable <- Att[with(Att, order(-Attendance)), ] %>%
+  mutate( Rk = c(1:30)) %>%
+  select(7,5,6,4,2,3)
+  
+knitr::kable(AttTable, format = "markdown", format.args = list(big.mark = ","), caption = "MLB 2016 Attendance by Team")
+```
+
+# MLB Attendance 2016
+
+
+ 
+
+```{r AttendanceGraph, echo=FALSE, message=FALSE, warning=FALSE}
+AttG <- Att %>%
+  mutate(LgDiv = paste(League, Division)) %>%
+  arrange(.,LgDiv, Attendance)
+AvgAtt <- mean(AttG$Attendance)
+
+ggplot(AttG, aes(x = reorder(Tm, Attendance), y = Attendance, fill = LgDiv)) + 
+  geom_bar(stat = "identity") + 
+  #scale_fill_brewer(type = "seq", palette = 1, direction = 1) + 
+  scale_fill_brewer(palette = "Set2", direction = 1) + 
+  xlab("Team") + 
+  ylab("MLB Attendance 2016") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  scale_y_continuous("MLB Attendance 2016", breaks = c(0.0, 1e+06, 2e+06, 3e+06, 3.5e+06),
+                     labels = c("0", "1.0M", "2.0M", "3.0M", "3.5M")) +
+  geom_hline(aes(yintercept=AvgAtt), color = "#AA0000")
+
+ 
+```
+\newpage
+
+# MLB Payrolls 2017
+
+Colorado rankw 16th out of 30 with a total payroll of $131M this season (2017).  This total budget is up almost $10M since the 2016 season.
+
+```{r MLB_Sal_2017, echo=FALSE, message=FALSE, warning=FALSE}
+s <- getSalaries(2017) %>%
+  mutate(Payroll = Total.Payroll, Average = Payroll/Roster) %>%
+  select(c(1,2,3,10,11))
+knitr::kable(s, format = "markdown", format.args = list(big.mark = ","), 
+             digits = 1, caption = "2017 MLB Total Payroll in Millions of Dollars")
+```
+\newpage
+
+# MLB Payrolls for 2017 Bar Chart
+
+```{r SalaryGraph, echo=FALSE, message=FALSE, warning=FALSE}
+s <- mutate(s,Tm = "",LgDiv="", League = "", Division = "")
+for (i in 1:nrow(s)) {
+  s$League[i] <- filter(c.Teams, Team == s$Team[i])$League
+  s$Tm[i] <- filter(c.Teams, Team == s$Team[i])$Team.Abr
+
+  s$Division[i] <- filter(c.Teams, Team == s$Team[i])$Division
+  s$LgDiv[i] <- paste(s$League[i], s$Division[i], sep = " ")
+}
+SalG <- s %>%
+  arrange(.,LgDiv, Payroll)
+AvgPayRoll <- mean(SalG$Payroll)
+
+ggplot(SalG, aes(x = reorder(Tm, Payroll), y = Payroll, fill = LgDiv)) + 
+  geom_bar(stat = "identity") + 
+  scale_fill_brewer(palette = "Set2", direction = 1) + 
+  xlab("Team") + 
+  ylab("MLB Payroll for 2017") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  scale_y_continuous("MLB Payroll 2017", ) +
+  geom_hline(aes(yintercept=AvgPayRoll), color = "#AA0000")
+
+ 
+```
+
+
+
+\newpage
+
+# Topics for Future Articles
+
+Here are a few suggestions, but I would prefer to hear from you, dear reader, on what interests you.
+
+* Player Value - I am personally just getting familiar with this concept.  Work In Progress (WIP)
+* What is the OPS+ statistic and how is it calculated.
+
+Here are a couple of suggestions my children came up with:
+
+* Survey MLB team payroll budgets.  This is a work-in-progress.  The attendance and the salary data are accounted for.  Need to get the average ticket prices and produce some interesting derived values.
+* Survey MLB ticket prices.  This goes with the previous topic. Ibid.
+
+Let me know what you would like to see in future articles.  Send me email at jdreed@q.com.
+
+Yours truly,
+
+  Jim Reed
+
+\newpage
+
+# Appendix
+
+
+## Glossary
+
+### Batting Statistics
+
+| Statistic Abbreviation| Definition                          |
+|-----------------------|--------------------------------------|
+|*G*| number of games (participated)|
+|*PA*| plate appearances |
+|*AB*| at bats|
+|*R*|  runs scored by player or team|
+|*RA*| runs allowed |
+|*H*|  hits|
+|*2B*| doubles|
+|*3B*| triples|
+|*HR*| home runs|
+|*RBI*| runs batted in|
+|*BA*| batting average|
+|*OBP*| on-base percentage|
+|*SLG*| slugging percentage|
+|*OPS*| on-base percentage plus slugging percentage|
+|*OPS+*| This statistic normalizes a player's OPS.  It adjusts for small variables that might affect OPS scores (e.g., park effects). |
+
+\newpage
+
+### Pitching Statistics
+
+| Pitching Statistic    | Definition                          |
+|-----------------------|--------------------------------------|
+|*Rk*|  Rank This is a count of the rows from top to bottom.  It is recalculated following the sorting of a column. |
+|*Pos*|  Position |
+|*Name*|  Player Name |
+|*Age*|  Player’s age at midnight of June 30th of that year |
+|*W*|  Wins |
+|*L*|  Losses |
+|*W-L%*|  Win-Loss Percentage W / (W + L) For players, leaders need one decision for every ten team games.  For managers, minimum to qualify for leading is 320 games. |
+|*ERA*|  9 * ER / IP  |
+|*G*|  Games Played or Pitched |
+|*GS*|  Games Started |
+|*GF*|  Games Finished |
+|*CG*|  Complete Game |
+|*SHO*|  Shutouts No runs allowed and a complete game. |
+|*SV*|  Saves |
+|*IP*|  Innings Pitched |
+|*H*|  Hits/Hits Allowed |
+|*R*|  Runs Scored/Allowed |
+|*ER*|  Earned Runs Allowed |
+|*HR*|  Home Runs Hit/Allowed |
+|*BB*|  Bases on Balls/Walks |
+|*IBB*|  Intentional Bases on Balls First tracked in 1955. |
+|*SO*|  Strikeouts |
+|*HBP*|  Times Hit by a Pitch. |
+|*BK*|  Balks |
+|*WP*|  Wild Pitches |
+|*BF*|  Batters Faced 
+|*ERA+*|  ERA+ 100*[lgERA/ERA] Adjusted to the player’s ballpark(s). |
+|*FIP*|  Fielding Independent Pitching |
+|*WHIP*|  (BB + H)/IP  For recent years, leaders need 1 IP per team game played |
+|*H9*|  9 x H / IP For recent years, leaders need 1 IP per team game played |
+|*HR9*|  9 x HR / IP For recent years, leaders need 1 IP per team game played |
+|*BB9*|  9 x BB / IP For recent years, leaders need 1 IP per team game played |
+|*SO9*|  9 x SO / IP For recent years, leaders need 1 IP per team game played |
+|*SO/W*|  SO/W or SO/BB For recent years, pitching leaders need 1 IP per team game played. |
+
+\newpage
+
+### Fielding Statistics
+
+| Fielding Statistic    | Definition                          |
+|-----------------------|--------------------------------------|
+|*Name*| Player Name Bold can mean player is active for this team or player has appeared in MLB * means LHP or LHB, \\# means switch hitter, + can mean HOFer. |
+|*Age*| Player’s age at midnight of June 30th of that year |
+|*G*| Games Played or Pitched |
+|*GS*| -- Games Started |
+|*CG*| -- Complete Game |
+|*Inn*| -- Innings Played in Field |
+|*Ch*| -- Defensive Chances Putouts + Assists + Errors |
+|*PO*| -- Putouts |
+|*A*| -- Assists  |
+|*E*| -- Errors Committed |
+|*DP*| -- Double Plays Turned |
+|*Fld%*| -- Fielding Percentage (Putouts + Assists) / (Putouts + Assists + Errors) 
+|*Rtot*| -- Total Zone Total Fielding Runs Above Avg The number of runs above or below average the player was worth based on the number of plays made. This number combines the Rtz, Rdp,Rof, Rcatch numbers into a total defensive contribution.  See the glossary section for a more complete explanation.  Provided by BaseballProjection.com |
+|*Rtot/yr*| -- Total Zone Total Fielding Runs Above Avg per 1,200 Inn  The number of runs above or below average the fielder was worth per 1,200 Innings (approx 135 games). This number combines the Rtz, Rdp, Rof, Rcatch numbers into a total defensive contribution.  See the glossary section for a more complete explanation.  Provided by BaseballProjection.com |
+|*Rdrs*| -- BIS Defensive Runs Saved Above Avg  The number of runs above or below average the player was worth based on the number of plays made.  This number combines the Rpm, Rbdp, Rbof, Rbcatch numbers into a total defensive contribution.  Provided by Baseball Info Solutions |
+|*Rdrs/yr*| -- BIS Defensive Runs Saved Above Avg per 1,200 Inn The number of runs above or below average the fielder was worth per 1,200 Innings (approx 135 games).  This number combines the Rpm, Rbdp, Rbof, Rbcatch numbers into a total defensive contribution. For pitchers, this is set to 200 Innings.  Provided by Baseball Info Solutions |
+|*RF/9*| -- Range Factor per 9 Inn 9 * (Putouts + Assists) / Innings Played |
+|*RF/G*| -- Range Factor per Game (Putouts + Assists) / Games Played  |
+|*PB*| -- Passed Balls |
+|*WP*| -- Wild Pitches |
+|*SB*| -- Stolen Bases |
+|*CS*| -- Caught Stealing |
+|*CS%*| -- Caught Stealing Percentage CS / (SB + CS) |
+|*lgCS%*| -- League Caught Stealing Percentage League Expected CS / Players SB + Players CS |
+|*PO*| -- Pickoffs Runner picked off a base. May include cases they were safe on an error. Also includes Pickoff Caught Stealing plays.|
+|*Pos*| Summary -- Positions Played  The positions either followed by the games played at that position or in order of games or innings played.  For a single season, * indicates they played at least 2/3rds of the team games there Positions after / indicate less than ten games played at those positions.  For career, a + sign means more than 300 games at that position and a - sign means less than 30 games. |
+
+
+
+Run date/time: `r Sys.Date()` `r Sys.time()`

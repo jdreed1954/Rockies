@@ -1,0 +1,33 @@
+Status,Player.First,Player.Last,Dis.Detail,Age,Pos,Arb.Status,Base.Salary,Signing.Bonus,Incentives,Total.Salary,Adj.Salary,Payroll.Pct
+Active,Tony,Wolters,,24,C,Pre-Arb,540000,,,540000,540000,0.41
+Active,Pat,Valaika,,24,SS,Pre-Arb,535000,,,535000,488141,0.37
+Active,Trevor,Story,,24,SS,Pre-Arb,540000,,,540000,540000,0.41
+Active,Antonio,Senzatela,,22,SP,Pre-Arb,535000,,,535000,535000,0.41
+Active,Chris,Rusin,,30,RP,Pre-Arb,545000,,,545000,545000,0.42
+Active,Mark,Reynolds,,33,3B,Vet,1500000,,,1500000,1500000,1.15
+Active,Chad,Qualls,,38,RP,Vet,3250000,500000,,3750000,3750000,2.86
+Active,Adam,Ottavino,,31,RP/CL,Arb 3,2100000,,,2100000,2100000,1.6
+Active,Scott,Oberg,,27,RP,Pre-Arb,540000,,,540000,540000,0.41
+Active,Jake,McGee,,30,RP,Arb 3,5900000,,,5900000,5900000,4.5
+Active,German,Marquez,,22,RP,Pre-Arb,537000,,,537000,489978,0.37
+Active,Jordan,Lyles,,26,RP,Arb 3,3175000,,,3175000,3175000,2.42
+Active,D.J.,LeMahieu,,28,2B,Arb 2,4800000,,,4800000,4800000,3.66
+Active,Greg,Holland,,31,RP/CL,Vet,6000000,,,6000000,6000000,4.58
+Active,Carlos,Gonzalez,,31,RF,Vet,20000000,428571,,20428571,20428571,15.6
+Active,Dustin,Garneau,,29,C,Pre-Arb,537000,,,537000,537000,0.41
+Active,Kyle,Freeland,,23,SP,Pre-Arb,535000,,,535000,535000,0.41
+Active,Carlos,Estevez,,24,RP,Pre-Arb,537000,,,537000,537000,0.41
+Active,Ian,Desmond,,31,1B,Vet,8000000,,,8000000,8000000,6.11
+Active,Tyler,Chatwood,,27,SP,Arb 3,4400000,,,4400000,4400000,3.36
+Active,Shane,Carle,,25,RP,Pre-Arb,535000,,,535000,499833,0.38
+Active,Charlie,Blackmon,,30,CF,Arb 2,7300000,,,7300000,7300000,5.57
+Active,Nolan,Arenado,,26,3B,Arb 2,11750000,,,11750000,11750000,8.97
+Active,Tyler,Anderson,,27,SP,Pre-Arb,540000,,,540000,540000,0.41
+Active,Alexi,Amarista,,28,SS,Arb 3,1100000,,,1100000,1100000,0.84
+Disabled,Michael,Dunn,(10-day),31,RP,,4000000,,,4000000,4000000,3.05
+Disabled,Chad,Bettis,(60-day),28,SP,,545000,,,545000,545000,0.42
+Disabled,Jairo,Diaz,(10-day),25,RP,,540000,,,540000,540000,0.41
+Disabled,Jon,Gray,(10-day),25,SP,,540000,,,540000,540000,0.41
+Disabled,David,Dahl,(10-day),23,CF,,537000,,,537000,537000,0.41
+Disabled,Tom,Murphy,(10-day),26,C,,537000,,,537000,537000,0.41
+Suspended,Gerardo,Parra,,29,LF,,8000000,,,8000000,8000000,6.11

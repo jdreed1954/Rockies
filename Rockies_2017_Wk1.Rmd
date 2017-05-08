@@ -1,0 +1,182 @@
+---
+title: 'Rockies 2017 - Week #1'
+author: "Jim Reed (jdreed@q.com)"
+date: "April 3, 2017"
+output:
+  pdf_document: default
+  html_notebook: default
+  html_document: default
+---
+## Introduction
+
+My purpose in writing this and future articles is twofold.  The first is to try to impart some interesting information about the Colorado Rockies to you, the reader.  My wife points out that each article should be told in the fashion of a story.  So, using some statistics and data available on the internet, I will attempt to make each article a small story with beginning, middle and end.
+
+Secondly, I am working to acquire more skills in data analytics, data science some call it.  My tool of choice is R, a statistical framework and language.  R is a powerful tool but has much complexity to master.  One of the document types supported by R is the R Markdown, or, more specifically, R Notebooks.  Think of an R Notebook as a lab notebook containing data and formulas as well as long form descriptions of what is observed.  In this case, the data and code (programs) are hidden to make the overall results less geeky and perhaps more interesting to you, the reader.  Of course, there will be add graphs and tables to illustrate a pertinent point.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(lubridate)
+library(Lahman)
+
+players <- read_csv("Rockies40.csv")
+source("../Baseball/Baseball_Functions.r")
+#Master <- getMaster()
+
+players$player.id <- as.character(map2(players$First,players$Last, getPlayerID))
+players <- mutate(players,player.id = ifelse(player.id == "character(0)",NA,player.id))
+# Make this change due to more than one "Tom Murphy" in the master records.
+players <- mutate(players, player.id = ifelse(Last == "Murphy", "murphto04",player.id))
+names(players)[1] <- "Group"
+# Lets add Age to the players data frame.
+birthyears <- year(parse_date(players$DOB,"%m/%d/%Y"))
+players$Age <- 2017 - birthyears
+#Batting <- getBatting()
+
+Franchise <- read_csv("Franchise_History.csv")
+names(Franchise)[1] <- "Year"
+```
+
+
+## A Short History of the Colorado Rockies 1993-2016
+
+
+```{r, echo=FALSE}
+Franchise <- Franchise %>% filter(Year < 2017) %>% select(-c(2,3,12,16:22))
+knitr::kable(Franchise, big.mark=",")
+```
+
+### Bar Chart of Rockies Attendance 1993 - 2016
+
+```{r, echo=FALSE}
+ggplot(Franchise, aes(x = Year, y = Attendance)) + geom_bar(stat = "identity") +
+  scale_x_continuous(breaks = c(1993, 1995, 2000, 2005, 2010, 2015)) +
+  scale_y_continuous(breaks = c(1e+06,2e+06,2.5e+06, 3e+06, 3.5e+06, 4e+06, 4.4e+06), 
+                     labels =c("1M", "2M", "2.5M", "3M","3.5M", "4M", "4.4M"))
+```
+
+\newpage
+
+## 2017 Hope Springs Eternal
+
+Whenever I hear the phrase _Hope Springs Eternal_, I think of Springtime (oddly) and the hope of a new baseball season.  Will the Rockies have another memorable year like 1997 when they won the National League pennant?
+
+The phrase comes from Alexander Pope's [_An Essay on Man_](https://en.wikipedia.org/wiki/Hope_Springs_Eternal)
+
+> Hope springs eternal in the human breast;
+Man never is, but always to be blessed:
+The soul, uneasy and confined from home,
+Rests and expatiates in a life to come.
+– Alexander Pope, An Essay on Man
+
+Well, here we are in week one of the 2017 MLB season.  Will our Rockies rise to our hopes and expectations or make us wait for another time?
+
+As some of you already know, I have caught the Sabermetrics fever over the winter, reading [_Moneyball_ by Michael Lewis](https://en.wikipedia.org/wiki/Moneyball). 
+
+**Sabermetrics** is defined by Wikipedia as:
+
+> Sabermetrics is the empirical analysis of baseball, especially baseball statistics that measure in-game activity. Sabermetricians collect and summarize the relevant data from this in-game activity to answer specific questions. The term is derived from the acronym SABR, which stands for the Society for American Baseball Research, founded in 1971. The term sabermetrics was coined by Bill James, who is one of its pioneers and is often considered its most prominent advocate and public face.
+
+Another book, [_Analyzing Baseball Data with R_ by Max Marchi and Jim Albert](https://www.crcpress.com/Analyzing-Baseball-Data-with-R/Marchi-Albert/p/book/9781466570221) gave me the technical framework to explore data sets available on the internet.
+
+Following are some statistical tidbits I have manufactured on my own (based on historical data online) or gleaned from the internet.  I will reference specific data from the internet with hyperlinks but generally, the data are either from the historical [Lahman Database](http://www.seanlahman.com/baseball-archive/statistics/) or [Baseball Reference](http://www.baseball-reference.com/).
+
+### Rockies 2016, A Retrospective
+
+The Rockies had an interesting season in 2016.  Despite finishing number 2 of all MLB teams in OPS with .794 and Runs per Game, 5.22 (reference: [2016 Team Standard Batting](http://www.baseball-reference.com/leagues/MLB/2016-standard-batting.shtml)).  Despite all that success on offense, they still finished #20 with a win-loss record of 75-87 (.463),  This, of course was way off the mark in making the playoffs.  The old saw goes, "You gotta win at least ninety games to get into the playoffs."  The **Rockies** were fifteen games shy of that goal.
+
+#### Pythagorean Win-Loss Theorem
+
+> The Pythagorean Win-Loss Theorem of Baseball is a creation of Bill James which relates the number of runs a team has scored (R) and surrendered (RA) to its actual winning percentage, based on the idea that runs scored compared to runs allowed is a better indicator of a team's (future) performance than a team's actual winning percentage.Feb 20, 2015
+
+$$ predictW-L = \frac{R^2}{R^2+RA^2}   $$
+
+I won't go into the details (perhaps later in the season, if anyone is interested), except to make two points:
+
+1.  Pythagoras had nothing to do with this theorem.  The formula looks somewhat similar to the calculation of the distance between two points in space or solving for the length of the hypotenuse of a right triangle.  The usage of "Pythagorean" in this instance is all the idea of Bill James, credited as the _Father of Sabermetrics_.
+
+2. The Rockies had a _predicted_ Win-Loss ratio of 80-82.  Simply put, the number of runs scored by and against the Rockies would indicate that they should have won at least eighty games in 2016. 
+
+
+### Rockies 2017
+
+The Rockies 40-man roster is young.  In fact it's the fourth youngest team in Major League Baseball (out of 30).  The oldest average is 29.9 (Toronto).  The 2017 Rockies have an average of `r round(mean(players$Age), digits=1)`.
+
+#### Rockies Roster - Current Career Statistics for non-Pitchers 
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+source("../Baseball/Baseball_Functions.r")
+c <- players[complete.cases(players),]
+output <- tibble(Group  = character(),
+                 Last  = character(), 
+                 First = character(),
+                 Age   = integer(),
+                 Y     = integer(), 
+                 C.G   = integer(),
+                 C.AB  = integer(),
+                 C.R   = integer(), 
+                 C.H   = integer(),
+                 C.2B  = integer(),
+                 C.3B  = integer(),
+                 C.HR  = integer(),
+                 C.RBI = integer(),
+                 C.BB  = integer(),
+                 C.SO  = integer(),
+                 C.SB  = integer(),
+                 C.AVG = double(),
+                 C.SLG = double(),
+                 C.OBP = double(),
+                 C.OPS = double())
+
+for (i in 1:nrow(c)) {
+  output[i,] <- get_career_long(get_stats(c$player.id[i]))
+  
+}
+# SOme prep work to Format the table.
+cnames <- c("Last", "First", "Age", "Yrs", "G", "AB", "R", "H", "2B","3B", "HR", 
+            "RBI", "BB", "SO",  "SB",  "AVG", "SLG", "OBP", "OPS")
+
+# Let's cleanup cases that are not complete and eliminate the pitchers..
+output <- output[complete.cases(output),] %>% filter(Group != "Pitchers") %>%
+  select(Last:C.OPS)
+knitr::kable(arrange(output, Last), col.names = cnames, digits = 3)
+#get_career_long(get_stats(subset(players, Last == "Murphy")$player.id))
+
+AvgOPS <- mean(output$C.OPS)
+
+```
+
+#### Offensive Reason for Concern
+
+In the 2016, the Rockies ended the year with the second best team OPS of .794.
+[OPS](https://en.wikipedia.org/wiki/On-base_plus_slugging) is defined as: 
+
+> On-base plus slugging (OPS) is a sabermetric baseball statistic calculated as the sum of a player's on-base percentage and slugging average. The ability of a player both to get on base and to hit for power, two important offensive skills, are represented.
+
+This year's OPS average of non-pitchers on the 40-man roster is `r round(AvgOPS,3)`.  This would put the Rockies in the below average range as defined by Bill James.
+
+|Category	| Classification	| OPS Range |
+|---------|-----------------|-----------|
+| A	| Great	| .9000 and Higher |
+| B	| Very Good	| .8333 to .8999 |
+| C	| Above Average	| .7667 to .8333 |
+| D	| Average	| .7000 to .7666 |
+| E	| Below Average	| .6334 to .6999 |
+| F	| Poor	| .5667 to .6333 |
+| G	| Very Poor	| .5666 and Lower |
+
+
+Reason for concern, true, but the youth of the team and, whole season ahead, perhaps the Rockies will live up to their 2016 benchmark for batting efficiency again this year.
+
+### Topics for Additional Sabermetric Tidbits
+
+The Rockies have consistently performed well at the plate.  The most-often quoted reason for this is, "Because Coors Field is situated at the highest altitude in MLB, it is considered a hitter's park. Of course, the Rockies turn in superior batting statistics."  Though, this is likely, the teams we face get to play at Coors Field, too.  Is the reason for the Rockies' struggle to get over a win-loss of .500, the skill of the Rockies pitching staff.  Do the Rockies have a hard time attracting superior pitchers because of our "hitter's park" issue?
+
+Anyway, I would like to explore pitching metrics in future articles.
+
+Let me know what you would like to see in future articles.  Send me email at jdreed@q.com.
+
+Yours truly,
+
+  Jim Reed
+
+

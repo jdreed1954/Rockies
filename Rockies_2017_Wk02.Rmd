@@ -1,0 +1,120 @@
+---
+title: 'Rockies 2017 - Week #2'
+author: "Jim Reed (jdreed@q.com)"
+date: "April 10, 2017"
+output:
+  pdf_document: default
+  html_notebook: default
+  html_document: default
+---
+## Introduction
+The opening week of the 2017 season completed on Sunday, April 10. The Rockies are off to a wonderful start. The home team managed to win five (5) of their first seven (7) games.
+
+This purpose in this article is to start to develop a dashboard or report card that can be repeated each week to track some key statistics.  Initially, we will present:
+
+* Game-by-Game Results of the past week.
+* Colorado Rockies batting statistics in rank order.
+
+The source data for this article can be found at URL [http://baseball-reference.com](http://baseball-reference.com).
+
+In the future I would like to add other statistics having to do with pitching and other defense-related measures.  I am open to input on this.  If there are favorite pitching or fielding measurements you would like to see, let me know.
+
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(lubridate)
+library(Lahman)
+
+source("../Baseball/Baseball_Functions.r")
+```
+## Rockies Game-by-Game Schedule/Results
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+SCHED <- read_csv("schedule17.csv")
+GBG <- read_csv("gbg.csv")
+for (i in 1:nrow(GBG)){
+  gtemp <- filter(SCHED, G.Num == i)
+  GBG$Day[[i]] <-  gtemp$DOW
+  GBG$Date[[i]] <- gtemp[1,]$Date
+}
+GBG <- select(GBG,c(1,21,2,4,5,6,7,8,9,12, 14, 15, 16, 20) )
+
+#GBG <- GBG %>% select(-c(3,10:13,17,18)) %>% head(7)
+GBG$`H/A`[is.na(GBG$`H/A`)] <- " "
+  knitr::kable(GBG)
+```
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+WINS <- sum(GBG$`W/L` == "W")
+LOSSES <-  sum(GBG$`W/L` == "L")
+WPCT <- WINS/(WINS + LOSSES)
+TotalR <- sum(GBG$R)
+TotalRA <- sum(GBG$RA)
+```
+
+
+The Rockies current record now is `r WINS` Wins and `r LOSSES` Losses.  So far, the Rockies have scored `r TotalR` runs and have had `r TotalRA` runs scored against them.
+
+After the first week, it wouldn't be prudent to predict the number of wins the Rockies will accumulate this season.  There are usually winning and losing streaks during the season, even for the best teams.  Suffice to say, the Rockies are performing well.
+
+\newpage
+
+## 2017 Colorado Rockies Batting Statistics
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+TEAMB <- read_csv("team_batting.csv")
+TEAMB <- TEAMB %>% select(-c(4,15:18,23:29)) %>% head(12)
+knitr::kable(TEAMB)
+```
+
+## Predicting Win/Loss using Bill James' "Pythagorean" Formula
+
+As we develop more and more week's data on this season, we can begin to guess how close the Rockies are to a successful season, whether or not they will make the playoffs.  This will be added in future weekly articles.
+
+## Topics for Future Articles
+
+Here are a few suggestions, but I would prefer to hear from you, dear reader, on what interests you.
+
+* pitching metrics
+* What is the OPS+ statistic and how is it calculated.
+* What are the chances of the Rockies winning more than 81 games this season?
+
+Let me know what you would like to see in future articles.  Send me email at jdreed@q.com.
+
+Yours truly,
+
+  Jim Reed
+
+\newpage
+
+# Appendix
+
+## Pythagorean Win-Loss Theorem
+
+> The Pythagorean Win-Loss Theorem of Baseball is a creation of Bill James which relates the number of runs a team has scored (R) and surrendered (RA) to its actual winning percentage, based on the idea that runs scored compared to runs allowed is a better indicator of a team's (future) performance than a team's actual winning percentage.Feb 20, 2015
+
+$$ predictW/L = \frac{R^2}{R^2+RA^2}   $$
+
+## Glossary
+
+
+| Statistic Abbreviation| Definition                          |
+|-----------------------|--------------------------------------|
+|*G*| number of games (participated)|
+|*PA*| plate appearances |
+|*AB*| at bats|
+|*R*|  runs scored by player or team|
+|*RA*| runs allowed |
+|*H*|  hits|
+|*2B*| doubles|
+|*3B*| triples|
+|*HR*| home runs|
+|*RBI*| runs batted in|
+|*BA*| batting average|
+|*OBP*| on-base percentage|
+|*SLG*| slugging percentage|
+|*OPS*| on-base percentage plus slugging percentage|
+|*OPS+*| This statistic normalizes a player's OPS.  It adjusts for small variables that might affect OPS scores (e.g., park effects). |
+
+
