@@ -22,13 +22,27 @@ for (i in cg_sheets){
 cg_all <- select(cg_all, Year,c(1:27)) %>%
   filter(AVG < .500)
 
-
-sp <- filter(cg_all, Year == 2017) %>% 
-  ggplot(., aes(as.Date(Date),OBP+SLG), size = OBP) + 
+# Facet Wrap for his 
+sp <- ggplot(cg_all, aes(as.Date(Date),OBP+SLG, group = Year), size = OBP) + 
   scale_x_date(date_breaks = "1 month", 
-      date_labels="%b-%Y") +
+      date_labels="%b") +
       geom_point() + geom_smooth()
-sp
+
+sp + facet_wrap(~Year, scales=("free_x")) + theme_bw()
+
+# Career OBP + SLG
+ggplot(cg_all, aes(as.Date(Date),OBP+SLG), size = OBP) + 
+  scale_x_date(date_breaks = "1 year", 
+               date_labels="%Y") +
+  geom_point() + geom_smooth()
+
+# Violin Plots
+bp <- ggplot(cg_all, aes(as.Date(Date),OBP+SLG), size = OBP) + 
+  scale_x_date(date_breaks = "1 year", 
+  date_labels="%Y") +
+  geom_violin()
+
+bp + facet_wrap(~Year, scales=("free_x")) + theme_bw()
 
 # Baseball-Reference.com
 cg_url <- "http://www.baseball-reference.com/players/g/gonzaca01.shtml#batting_standard::none"
@@ -39,4 +53,11 @@ tables <- list.clean(tables, fun = is.null, recursive = FALSE)
 n.rows <- unlist(lapply(tables, function(t) dim(t)[1]))
 
 CargoBatting <- as_tibble(tables$batting_standard)
+
+# Filter out minor league stints.
+cg <- filter(CargoBatting, Lg == "AL" | Lg == "NL")
+ggplot(cg,aes(x = Year, y = BA)) + geom_point() + geom_smooth()
+
+ggplot(cg,aes(x = Year, y = OBP + SLG)) + geom_point() + geom_smooth()
+
 BrowseURL("http://eadxl.tidyverse.org")

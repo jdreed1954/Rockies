@@ -51,18 +51,16 @@ knitr::kable(Current, digits = 3,
 
 ## Week #6
 
-I did get some favorable feedback on the W/L Margin charts showing the game-by-game success or failure and comparison to the 2007 season.  We will incorporate that into the **Dashboards** section and continue publishing this information weekly.
+The Rockies had a better than even week since Monday, May 1 with seven wins and five losses.  The Dodgers came to town and hand us two losses before leaving.  However, by the Sunday (May 14), the Rox are still tops in their division with a 25 & 15 record.
 
-On the otherhand, I will discontinue updating the Fielding statistics.  The reason being that I am still looking for an automatic way to refresh the data each week.  There appears to be a glitch in the link to this information at baseball-reference.com.  Until I get that resolved,  I will include it as a special when requested.  Don't worry Cath, Nolan is proving himself to be a consistent defensive player at third base.  
+Personally, I had a pretty busy week and weekend, so the **Featured Graphics** section will get short shrift this week.  I have been working on summarizing Carlos Gonzalez's batting performance for the years in his MLB career leading up to this season.  The premise is that Cargo takes some time each season to hit his stride and that this season is no difference.  The hope being that he will be hitting in MVP territory before the end of the year, if not sooner.  Anyway, if I get time to refine the graphics this week while in Nashville, I just might be able to include this in next week's newsletter.
 
-You might have noticed on the first page in addition to the picture and quote of the week, I have included a couple of summary tables showing the progress thus far this season.  If you just look at this first page, you should get a sense of the Rockies are doing.
-
-The featured Graphics and Tables this week will address the MLB team payrolls and their steep increases over the last ten years.  Additionally, there is a breakdown of the Rockies salary budget. 
+For this week, I decided to appeal to your sense of wonder when you first encountered logarithms in Algebra. We present a graph of log data corresponding to a particular statistic belonging to Cargo.  Your job is to figure what the real value of Cargo's "performance" in this instance for 2009 and 2017.  Should be fun!
 
 Here is a synopsis of what is included this week.
 
 * **Featured Graphics**  
-    + A Quiz 
+    + A Trip Down Mathematics Memory Lane and A Quiz 
 * Colorado Rockies Dashboards
     + Rockies Win/Loss Graphs for 2017 and 2007
     + National and American League Standings
@@ -80,9 +78,9 @@ Let me know what other special interest statistics you might like to see.  Remem
 
 # Featured Graphics
 
-# A Quiz
+## A Trip Down Mathematics Memory Lane and A Quiz 
 
-Do you remember taking Algebra?  I remember it as magic, linear equations, quadratic equations, polynomials, and, of course, logarithms.  Logarithms, especially were magic to me:take the logarithm of two numbers, take these and add them together, take the antilogarithm of the result and you got the **product** of the original two values!  Wow, multiplication by adding.  The difficulty comes when you have to look up the anti-logs from tables.  We used the __CRC Standard Mathematical Tables and Formulae__.  The magic of the process wore off after performing a handful of these multiplications, looking up the anti-log, interpolating between two values.  Boring, but a powerful concept, just the same.
+Do you remember taking Algebra?  I remember it as magic, linear equations, quadratic equations, polynomials, and, of course, logarithms.  Logarithms, especially were magic to me:take the logarithm of two numbers, take these new values and add them together, take the antilogarithm of the result and you got the **product** of the original two values!  Wow, multiplication by adding!  The difficulty comes when you have to look up the antilogs from tables.  We used the __CRC Standard Mathematical Tables and Formulae__.  The so called **magic** of the process wore off after performing a handful of these multiplications, looking up the antilog, interpolating between two values.  Boring, but a powerful concept, just the same.
 
 Following is a graph of logarithmic values based on a metric for Carlos Gonzalez in last week's article.  Your mission is to identify the metric and the **real** lowest and highest value in the graph below.
 
@@ -101,7 +99,7 @@ ggplot(career,aes(x = Year, y = logSalary)) +
 
 ```
 
-Have you guessed what represented here?  It is all about anti-logs.  Read further to get more hints.
+Have you guessed what represented is here?  It is all about **antilogs.**  Read further to get more hints.
 
 Solve for $x$ in the following equation to get the real value of a statistic for Cargo's **2017 season.**
 
@@ -111,16 +109,16 @@ Solve for $x$ in this equation to get the value of this unknown statistic for Ca
 
 $$log_{10}(x) = 5.605305$$
 
-Can you guess what these values represent?  Here is a clue:
+Here is another clue:
 
-Take the anti-log (base 10) of each side, yielding, for the latter equation above:
+Take the antilog (base 10) of each side, yielding, for the latter equation above:
 
-$$x = 10^{5.605305}$$
+$$x_{2009} = 10^{5.605305}$$
 Likewise, the first equation resolves to:
 
-$$x = 10^{7.301030}$$
+$$x_{2017} = 10^{7.301030}$$
 
-Send me your answers in email or printed on a crisp hundred-dollar bill.  I'll let everyone know our winners next week.
+Send me your answers in email or printed on a crisp hundred-dollar bill.  I'll let everyone know our winners next week.  Just send your answers to jdreed@q.com.  No need to copy all!
 
 \newpage
 
@@ -329,9 +327,11 @@ knitr::kable(TEAMP, caption = "Rockies pitching statistics (2 of 2).")
 
 Here are a few suggestions, but I would prefer to hear from you, dear reader, on what interests you.
 
+* Analysis of Carlos Gonzalez batting trajectory year by year.  Does he always have a slow start? 
 * Player Value - I am personally just getting familiar with this concept.  Work In Progress (WIP)
 * What is the OPS+ statistic and how is it calculated.
 * Survey MLB ticket prices.
+* A suggestion from a work colleague that we investigate what budding talent we have in the Rockies farm system.  I will look into this and see what I can find.
 
 Let me know what you would like to see in future articles.  Send me email at jdreed@q.com.
 
