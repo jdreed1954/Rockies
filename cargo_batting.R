@@ -23,7 +23,7 @@ cg_all <- select(cg_all, Year,c(1:27)) %>%
   filter(AVG < .500)
 
 # Facet Wrap for his 
-sp <- ggplot(cg_all, aes(as.Date(Date),OBP+SLG, group = Year), size = OBP) + 
+sp <- ggplot(cg_all, aes(as.Date(Date),OPS, group = Year), size = OBP) + 
   scale_x_date(date_breaks = "1 month", 
       date_labels="%b") +
       geom_point() + geom_smooth()
@@ -61,3 +61,4 @@ ggplot(cg,aes(x = Year, y = BA)) + geom_point() + geom_smooth()
 ggplot(cg,aes(x = Year, y = OBP + SLG)) + geom_point() + geom_smooth()
 
 BrowseURL("http://eadxl.tidyverse.org")
+
