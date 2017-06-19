@@ -1,11 +1,12 @@
 ---
-title: 'Rockies 2017 - Week #11'
+title: 'Rockies 2017 - Week #10'
 author: "Jim Reed (jdreed@q.com)"
-date: "Monday, June 19, 2017"
+date: "June 19, 2017"
 output:
-  pdf_document: default
-  html_document: default
-  html_notebook: default
+  pdf_document:
+    includes:
+      in_header: header.tex
+ 
   fontsize: 12pt
 ---
 
@@ -27,7 +28,7 @@ opts_chunk$set(echo=FALSE,
 
 source("../Baseball/Baseball_Functions.r")
 ```
-```{r , fig.cap = "DJ LeMahieu (born July 13, 1988 in Visalia, California): Second Base, Colorado Rockies.  DJ's WAR rating is 1.5.", fig.height =2.0}
+```{r , fig.cap = "DJ LeMahieu (born July 13, 1988 in Visalia, California): Second Base, Colorado Rockies.  DJ's WAR rating is 1.4.", fig.height =2.0}
 knitr::include_graphics("images/dj-lemahieu-2.jpg")
 ```
 
@@ -65,9 +66,7 @@ knitr::include_graphics("images/Colorado-Rockies-Logo2.jpg")
 
 ## Week #11
 
-The Rox had a mixed week, however, remaining on top of the NL West division.  They started the week away, losing twice to the Pirates and then winning against them in the last game of the series.  The Rockies then  started a home stand against the Giants on Thursday, winning four.  
-
-Here is an interesting fact, **the Rockies have been first place in their division 58 days out 65 days of the season** (counts all days of the season including off days).
+The Rox had a mixed but successful week.  They started the week away losing twice to the Pirates, winning against them in the last game of the series.  They started a home stand against the Giants on Thursday, winning three (maybe four).  Here is an interesting fact, **the Rockies have been first place in their division fifty-seven days out sixty-four days of the season** (counts all days of the season including off days).
 
 Here is a synopsis of what is included this week.
 
@@ -98,29 +97,27 @@ Let me know what other special interest statistics you might like to see.  Remem
 
 ## What is "Wins Above Replacement" and How is it Calculated
 
-The Sabermetrician's Holy Grail is to develop more and better statistics to measure the effectiveness of players and teams.  The goals are to better define the essence of a winning team and define the most comprehensive metric to compare each player against all others, past and present.  
+The study of Sabermetrics is an evolving methodlogy for measuring and understanding baseball.  Since the eary work by Bill James, there has been an effort to create metrics that capture the worth or ranking of a player.  We have moved on from just stating a ballplayer's batting average to noting his effectiveness of getting base (OBP) and his ability to get extra-base hits (SLG).  And, of course, we combine OBP and SLG to represent (OPS) a player's overall effectiveness as a batter.
 
-Since the early work by Bill James, there has been an evolution of metrics to measure batting, base running, fielding, and pitching.  We have moved on from just stating a ballplayer's batting average (BA) to measuring his effectiveness of getting on base (OBP) and his ability to get extra-base hits (SLG).  And, of course, we combine OBP and SLG to represent (OPS) a player's overall effectiveness as a batter.  However, this does not tell the whole story of a position-player or pitcher's effectiveness.  What's missing are measurements that take into account of his fielding or pitching.   
+One of the more esoteric metrics you may hear about is WAR or Wins Above Replacement.  The theory is to calculate a number to express a players worth compared to all other players of a similar position.  How many games has this team won due to the contributions of player being measured, as compared to an average replacement.  
 
-An attempt to take all of these factors into account has gone into the development **WAR,** Wins Above Replacement.  The basis of WAR is to estimate the number of runs contributed by a player.  This number of runs is translated into wins by roughly ten runs being equivalent to one win. 
-
-For example, Rockies third-baseman, Nolan Arenado has a WAR rating of  3.1, which makes him the Rockies highest-rated WAR player. 
+Let us use a Rockies player as an example.  Currently, Rockies third baseman, Nolan Arenado has a WAR rating of  2.9.  Nolan is currently the Rockies highest-rated WAR player.  A WAR of 2.9 is the number of games above what the team would expect with a replacement.
 
 WAR is a measure of a players offensive performance (batting and base running) and defensive effectiveness in denying runs by opposing teams by fielding or pitching.
 
-There is no agreed upon standard calculation for WAR values.  Three primary sources of WAR calculations are **Baseball Prospectus, Baseball Reference and FanGraphs.**  The Baseball Reference version of WAR is named **bWAR** or **rWAR.**  FanGraphs uses the abbreviation **fWAR** for their particular formulation of the WAR statistic.
+There is no agreed upon standard calculation for WAR statistics.  Three primary sources of WAR values are **Baseball Prospectus, Baseball Reference and FanGraphs.**  The Baseball Reference version of WAR is named **bWAR** or **rWAR.**  FanGraphs uses the abbreviation **fWAR** for their particular formulation of the WAR value.
 
-WAR is not recognized as an official statistic by **Major League Baseball** or by the **Elias Sports Bureau.**  Although flawed and often miss-applied, WAR is the most comprehensive statistic for measuring a player's value. I consider it a work in progress.  As it is refined and standardized, it will become more commonly used and referenced.
+WAR is not recognized as an official statistic by **Major League Baseball** or by the **Elias Sports Bureau.**  Although flawed and often miss-applied, WAR is ths most comprehensive statistic for measuring a player's value.
+
+Next week, we will show some examples of fWAR values for position players and pitchers.  
 
 Following is a table of Rockies players and their Baseball Reference **bWAR** values.
 
 ```{r}
-Rockies_bWAR <-  tibble(Rank = c(1:12), Player = c("Nolan Arenado","Kyle Freeland", 
-                     "Charlie Blackmon", "Tyler Chatwood", "Antonio Senzatela", 
-                     "Greg Holland", "DJ LaMahieu", "Jeff Hoffman", "Mark Reynolds",
-                     "Chris Rusin",  "Jake McGee", "German Marquez"), 
-                      bWAR = c(3.1, 2.9, 2.4, 2.2, 2.2, 1.5, 1.5, 1.4, 1.3, 1.2, 1.2, 1.2))
-
+Rockies_bWAR <-  tibble(Rank = c(1:12), Player = c("Kyle Freeland", "Nolan Arenado", "Charlie Blackmon", 
+                     "Antonio Senzatela", "Tyler Chatwood", "Greg Holland", "Jake McGee", 
+                     "Jeff Hoffman", "DJ LaMahieu", "Mark Reynolds", "German Marquez", "Chris Rusin"), 
+                      bWAR = c(2.9, 2.8, 2.3, 2.1, 1.9, 1.5, 1.5, 1.4, 1.4, 1.2, 1.2, 1.1))
 knitr::kable(Rockies_bWAR,caption = "Baseball Reference bWAR Values of Top Twelve Colorado Rockies Players")
 
 ```
@@ -141,10 +138,12 @@ To be continued.
 # Rockies Dashboard
 ## Win Loss Margin
 
-One of the many ways to visualize a teams performance is to show wins and losses as the margin of the win (positive) or loss (negative).  In the graphs below, we show the current season performance.  For emphasis, wins are displayed in green (above the zero) and losses in red (below).
+One of the many ways to visualize a teams performance is to show wins and losses as the margin of the win (positive) or loss (negative).  In the graphs below, we show the current season performance.  For emphasis, wins are displayed as green (above the zero) and losses as red (below).
 
-Following the current season's graph, I have included the Win/Loss margin chart for our benchmark season of 2007 when the Rockies won the National League pennant.  
+Following the current season's graph, I have included the Win/Loss margin chart for our benchmark season of 2007 when the Rockies won the National League pennant. 
 
+\newpage
+\blandscape
 ```{r GBG17}
 GBG17 <- suppressWarnings(getRockiesGBG(2017))
 
@@ -158,7 +157,7 @@ GBG17 <- GBG17 %>% mutate(C.WinG = cumsum(WinG)) %>%
                                  format ="%B %d, %Y"))
 ```
 
-```{r WinLossMargin17,fig.height=3.5,fig.width=6.5}
+```{r WinLossMargin17,fig.height=3.0,fig.width=9.5}
 
 # Produce Win/Loss Margin Plot
 
@@ -196,7 +195,7 @@ GBG07 <- GBG07 %>% mutate(C.WinG = cumsum(WinG)) %>%
                                  format ="%B %d, %Y"))
 ```
 
-```{r WinLossMargin07,fig.height=3.5, fig.width=6.5}
+```{r WinLossMargin07,fig.height=3.0, fig.width=9.5}
 
 # Produce Win/Loss Margin Plot
 
@@ -220,6 +219,7 @@ p1
 p2
 ```
 
+\elandscape
 \newpage
 
 
@@ -251,7 +251,10 @@ knitr::kable(ALStandings$standings_C, caption = "AL Central Standings")
 knitr::kable(ALStandings$standings_W, caption = "AL West Standings")
 ```
 
+The Rockies current record is `r Current$Wins` Wins and `r Current$Losses` Losses.  The Rockies have scored `r TotalR` runs and have had `r TotalRA` runs scored against them.
+
 \newpage
+\blandscape
 
 ## Rockies Game-by-Game Schedule/Results
 
@@ -262,8 +265,8 @@ knitr::kable(GBG17)
 ```
 
 
-The Rockies current record is `r Current$Wins` Wins and `r Current$Losses` Losses.  So far, the Rockies have scored `r TotalR` runs and have had `r TotalRA` runs scored against them.
 
+\elandscape
 \newpage
 
 ## Pythagorean Win-Loss Theorem
@@ -392,12 +395,12 @@ print.xtable(xtable(Injuries, align = "l|l|l|l|p{4in}",caption = "Current Injuri
 
 Here are a few suggestions, but I would prefer to hear from you, dear reader, on what interests you.
 
-* Player Value - We finally got started on this one this week.  I will continue to explore WAR values in coming weeks.
+* Player Value - I am personally just getting familiar with this concept.  Work In Progress (WIP)
 * What is the OPS+ statistic and how is it calculated.
 * Survey MLB ticket prices.
 * A suggestion from a work colleague that we investigate what budding talent we have in the Rockies farm system.  I will look into this and see what I can find.
 
-Let me know what you would like to see in future articles.  Send me an email at jdreed@q.com.
+Let me know what you would like to see in future articles.  Send me email at jdreed@q.com.
 
 Yours truly,
 
