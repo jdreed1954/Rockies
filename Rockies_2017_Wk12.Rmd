@@ -3,9 +3,9 @@ title: 'Rockies 2017 - Week #12'
 author: "Jim Reed (jdreed@q.com)"
 date: "Monday, June 26, 2017"
 output:
-  pdf_document: default
-  html_document: default
-  html_notebook: default
+  pdf_document:
+    includes:
+      in_header: header.tex
   fontsize: 12pt
 ---
 
@@ -27,12 +27,13 @@ opts_chunk$set(echo=FALSE,
 
 source("../Baseball/Baseball_Functions.r")
 ```
-```{r , fig.cap = "Justin Turner slides into Nolan Arenado.  Nolan's WAR rating is 3.2, currently highest on the Rockies squad.", fig.height =2.0}
+```{r , fig.cap = "Justin Turner slides into Nolan Arenado.  Nolan's WAR (based on BASEBALL-REFERENCE calculation) rating is 3.2, currently highest on the Rockies squad.", fig.height =2.0}
 knitr::include_graphics("images/justin-turner-slides-into-nolan-arenado.jpg")
 ```
 
 
 > “Love is the most important thing in the world, but baseball is pretty good, too.” -- Yogi Berra
+
 
 ```{r FirstStats, results='asis'}
 theurl <- getURL("http://www.baseball-reference.com/leagues/NL/2017-standings.shtml#expanded_standings_W::none")
@@ -65,16 +66,16 @@ knitr::include_graphics("images/Colorado-Rockies-Logo2.jpg")
 
 ## Week #12
 
-In any season, a little rain must fall.  So it has been for the Rockies this past week.  For the fist time this season, they have lost four in a row.  Nick Groke of the Denver Post writes in a June 24, 2017 editorial regarding the Rockies reliance on a largely rookie pitching squad, 
+In any season, a little rain must fall.  So it has been for the Rockies this past week.  For the first time this season, they have lost five in a row.  Nick Groke of the Denver Post writes in a June 24, 2017 editorial regarding the Rockies reliance on a largely rookie pitching squad, 
 
 >"But a chill has overcome the Rockies’ progress. Not because of the losses, exactly, but the potential for weariness. Are we seeing the warning signs of fatigue in pitchers playing their first big-league season?" 
 
-Perhaps the All Star break will help the Rockies pitchers revive their fatigued arms.  The break for the Rockies starts on July 10 and ends on July 4 with the Rockies playing the New York Mets, away.
+Perhaps the All Star break will help the Rockies pitchers revive their fatigued arms.  The break for the Rockies starts on July 10 and ends on July 14 with the Rockies playing the New York Mets, away.
 
 Here is a synopsis of what is included this week.
 
 * **Featured Article**  
-    + What is "Wins Above Replacement" and How is it Calculated
+    + Example WAR Values from FANGRAPHS.
 * Colorado Rockies Dashboards
     + Rockies Win/Loss Graphs for 2017 and 2007
     + National and American League Standings
@@ -98,44 +99,47 @@ Let me know what other special interest statistics you might like to see.  Remem
 
 # Featured Article
 
-## What is "Wins Above Replacement" and How is it Calculated
+## Example WAR Values from FANGRAPHS.
 
-The Sabermetrician's Holy Grail is to develop more and better statistics to measure the effectiveness of players and teams.  The goals are to better define the essence of a winning team and define the most comprehensive metric to compare each player against all others, past and present.  
+As the careful, diligent reader will recall, last week we learned about the **Wins Above Replacement** (WAR) statistic.  Also, remember that the WAR statistic is computed differently among the websites that provide WAR.  The following tables were sourced from http://www.FanGraphs.com.  There are comprehensive tables available at FANGRAPHS.  A few of the tables are presented here as examples.
 
-Since the early work by Bill James, there has been an evolution of metrics to measure batting, base running, fielding, and pitching.  We have moved on from just stating a ballplayer's batting average (BA) to measuring his effectiveness of getting on base (OBP) and his ability to get extra-base hits (SLG).  And, of course, we combine OBP and SLG to represent (OPS) a player's overall effectiveness as a batter.  However, this does not tell the whole story of a position-player or pitcher's effectiveness.  What's missing are measurements that take into account of his fielding or pitching.   
+The first table lists Colorado Rockies players in rank-order based on their FANGRAPHS-calculated WAR values.
 
-An attempt to take all of these factors into account has gone into the development **WAR,** Wins Above Replacement.  The basis of WAR is to estimate the number of runs contributed by a player.  This number of runs is translated into wins by roughly ten runs being equivalent to one win. 
 
-For example, Rockies third-baseman, Nolan Arenado has a WAR rating of  3.1, which makes him the Rockies highest-rated WAR player. 
 
-WAR is a measure of a players offensive performance (batting and base running) and defensive effectiveness in denying runs by opposing teams by fielding or pitching.
 
-There is no agreed upon standard calculation for WAR values.  Three primary sources of WAR calculations are **Baseball Prospectus, Baseball Reference and FanGraphs.**  The Baseball Reference version of WAR is named **bWAR** or **rWAR.**  FanGraphs uses the abbreviation **fWAR** for their particular formulation of the WAR statistic.
-
-WAR is not recognized as an official statistic by **Major League Baseball** or by the **Elias Sports Bureau.**  Although flawed and often miss-applied, WAR is the most comprehensive statistic for measuring a player's value. I consider it a work in progress.  As it is refined and standardized, it will become more commonly used and referenced.
-
-Following is a table of Rockies players and their Baseball Reference **bWAR** values.
-
-```{r}
-Rockies_bWAR <-  tibble(Rank = c(1:12), Player = c("Nolan Arenado","Kyle Freeland", 
-                     "Charlie Blackmon", "Tyler Chatwood", "Antonio Senzatela", 
-                     "Greg Holland", "DJ LaMahieu", "Jeff Hoffman", "Mark Reynolds",
-                     "Chris Rusin",  "Jake McGee", "German Marquez"), 
-                      bWAR = c(3.1, 2.9, 2.4, 2.2, 2.2, 1.5, 1.5, 1.4, 1.3, 1.2, 1.2, 1.2))
-
-knitr::kable(Rockies_bWAR,caption = "Baseball Reference bWAR Values of Top Twelve Colorado Rockies Players")
-
-```
-
-To be continued.
-
-```{r WAR_Table}
-  fan_path <- "./data/FanGraphs_Leaderboard_17Jun2017.xlsx"
+```{r FG_Prep}
+  fan_path <- "./data/FanGraphs_Leaderboard_25Jun2017.xlsx"
   SHEETS <- excel_sheets(fan_path)
-  
-  WarTable  <- read_excel(fan_path)
-  WAR <- select(WarTable,-c(3:12,22)) 
+  FG_TITLE_BASE <- "FANGRAPHS Leaderboard"
+  FG_DATE_COLLECTED <- "(25Jun2017)"
+ 
 ```
+
+
+```{r FG_6}
+  sheet <- SHEETS[6]
+  my_caption <- paste(FG_TITLE_BASE,sheet,FG_DATE_COLLECTED)
+  
+  WAR <- read_excel(fan_path, sheet = sheet)
+  WAR <- select(WAR,-c(2,3))
+  WAR$PA[is.na(WAR$PA)] <- ""
+  WAR$IP[is.na(WAR$IP)] <- ""
+  knitr::kable(WAR, caption = my_caption)
+```
+
+\newpage
+
+The second FANGRAPHS example is a list of all the teams in MLB.  Each **team's** cumulative WAR value is calculated by summing up the WAR value for each position, including starting and replacement pitchers.  To say the least, it is disappointing that the Rockies are currently ranked 21 based on this cumulative WAR value.
+
+```{r FG_3}
+  sheet <- SHEETS[3]
+  my_caption <- paste(FG_TITLE_BASE,sheet,FG_DATE_COLLECTED)
+  
+  WAR <- read_excel(fan_path, sheet = sheet)
+  knitr::kable(WAR, caption = my_caption)
+```
+
 
 
 \newpage
