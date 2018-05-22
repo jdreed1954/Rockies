@@ -1,0 +1,62 @@
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6650 64-bit) (preloaded format=pdflatex 2018.4.9)  9 APR 2018 10:55
+entering extended mode
+**
+
+("C:\Users\jdree\AppData\Local\Programs\MiKTeX 2.9\tex\latex\tools\.tex"
+LaTeX2e <2018-04-01>
+Babel <3.18> and hyphenation patterns for 75 language(s) loaded.
+ File ignored)
+
+! Package inputenc Error: Unicode character  (U+4)
+(inputenc)                not set up for use with LaTeX.
+
+See the inputenc package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+<*> 
+     
+You may provide a definition with
+\DeclareUnicodeCharacter 
+
+
+! Package inputenc Error: Unicode character  (U+4)
+(inputenc)                not set up for use with LaTeX.
+
+See the inputenc package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+<*> 
+      
+You may provide a definition with
+\DeclareUnicodeCharacter 
+
+
+! Package inputenc Error: Unicode character  (U+4)
+(inputenc)                not set up for use with LaTeX.
+
+See the inputenc package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+<*> 
+       
+You may provide a definition with
+\DeclareUnicodeCharacter 
+
+! Emergency stop.
+<*> 
+       
+*** (job aborted, no legal \end found)
+
+ 
+Here is how much of TeX's memory you used:
+ 6 strings out of 492980
+ 251 string characters out of 3126830
+ 56383 words of memory out of 3000000
+ 3971 multiletter control sequences out of 15000+200000
+ 3640 words of font info for 14 fonts, out of 3000000 for 9000
+ 1141 hyphenation exceptions out of 8191
+ 8i,0n,8p,84b,14s stack positions out of 5000i,500n,10000p,200000b,50000s
+!  ==> Fatal error occurred, no output PDF file produced!

@@ -11,3 +11,6 @@
 .RData	
 ~*
 FANGRAPH_DAILY_WAR.xlsx
+*_cache
+*_files
+
