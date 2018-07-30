@@ -1,0 +1,663 @@
+---
+title: 'Colorado Rockies 2018 - Week #15'
+author: "Jim Reed (jdreed@q.com)"
+date: "Monday, July 16, 2018"
+output:
+  html_document:
+    df_print: paged
+  word_document: 
+    df_print: tibble
+    fig_caption: yes
+    fig_height: 3
+    highlight: espresso
+    keep_md: yes
+    reference_docx: word-style-reference-V1.docx
+  pdf_document: null
+  fontsize: 12pt
+header-includes: \usepackage{fancyhdr} \pagestyle{fancy} \fancyhead[CO,CE]{} \fancyfoot[CO,CE]{Colorado
+  Rockies Newsletter 2018, Week \#15} \fancyfoot[LE,RO]{\thepage}
+---
+
+```{r Init, echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(readxl)
+library(lubridate)
+library(Lahman)
+library(XML)
+library(RCurl)
+library(rlist)
+library(knitr)
+library(grid)
+library(xtable)
+library(flextable)
+library(scales)
+library(reshape2)
+library(RColorBrewer)
+library(kableExtra)
+
+opts_chunk$set(echo=FALSE,
+               cache=TRUE, autodep=TRUE, cache.comments=FALSE,
+               message=FALSE, warning=FALSE)
+HdrBg <- "lightsteelblue1"
+
+source("../Baseball/Baseball_Functions.r")
+```
+
+
+```{r Headline,fig.cap = "Colorado Rockies celebrate their 25th Season.",fig.width = 4}
+
+knitr::include_graphics("images/Rockies_25yrs.jpg")
+
+```
+
+
+> “Baseball is a man maker.” – Al Spalding
+
+> "And Spalding is a baseball maker." ~ Jim Reed
+
+
+# Colorado Rockies Statistics Snapshot
+
+### NL West Standings
+
+```{r FirstStats, results='asis', cap = "NL West Standings"}
+
+# theurl <- getURL("https://www.baseball-reference.com/leagues/NL/2018-standings.shtml#expanded_standings_C::none")
+
+theurl <- "https://www.baseball-reference.com/leagues/NL/2018-standings.shtml#expanded_standings_C::none"
+doc <- getURL(theurl)
+tables <- readHTMLTable(doc)
+tables <- list.clean(tables, fun = is.null, recursive = FALSE)
+n.rows <- unlist(lapply(tables, function(t) dim(t)[1]))
+
+# knitr::kable(tables$standings_W, caption = "NL West Standings")
+
+ft <- flextable(tables$standings_W, 
+                col_keys = c("Tm", "W", "L", "WL.pct", "GB")) %>%
+       theme_booktabs() %>%
+       bg(bg = HdrBg, part = "header") %>%
+       bg(i = ~ Tm == "Colorado Rockies", bg = "#EFEF99" ) %>%
+       add_footer(Tm = "Rockies holding steady in third place.") %>%
+       merge_at(j = 1:5, part = "footer")
+autofit(ft)
+     
+
+```
+
+
+### Current Wins, Runs, Runs Against and Predicted Season Wins
+
+
+```{r, cap = "Current Wins, Runs, Runs Against and Predicted Season Wins"}
+
+Current <- getCurrentResults()
+WINS <- Current$Wins
+LOSSES <- Current$Losses
+WPCT <- Current$Win.Pct
+TotalR <- Current$Runs
+TotalRA <- Current$Runs.Ag
+
+Curr <- Current %>% rename(Pred.Season.Wins = starts_with("Predicted"))
+
+ft2 <- flextable(Curr, col_keys = c("Wins", "Losses", "Win.Pct", "Runs","Runs.Ag", 
+          "Pred.Season.Wins")) %>%
+       theme_booktabs() %>%
+       bg(bg = HdrBg, part = "header")
+
+autofit(ft2)
+```
+
+
+\newpage
+
+
+#  Colorado Rockies Weekly Newletter
+
+```{r ,fig.height= 2.0}
+knitr::include_graphics("images/Colorado-Rockies-Logo2.jpg")
+```
+
+## Week #15
+
+* The Baseball Codes
+* What is the rarest play in baseball?
+* **Colorado Rockies Dashboard**
+    + Rockies Win/Loss Graphs for 2018 and 2007
+    + Top Twelve Rockies Players as Measured by WAR
+    + National and American League Standings
+    + Game-by-Game Results
+    + **Pythagorean Theorem** prediction of the number of wins.
+    + Batting Statistics (for non-pitchers)
+    + Pitching Statistics
+    + National League Team Standard Batting
+    + Current Injuries **Updated**
+    
+The source data for this article can be found at URL [http://baseball-reference.com](http://baseball-reference.com).
+
+
+\newpage
+
+### The Baseball Codes
+
+The week the Baseball Codes story was originally posted by Jason Turbow  on Thursday June 12, 2018 in his email newsletter.  This story involves getting even for transgressions long past.  Enjoy.
+
+ 
+#### 	Retaliatory Smackdown Comes Back To Bite Pirates
+
+by Jason Turbow 
+ 
+Wait for it.
+
+That’s a prime directive when it comes to baseball retaliation, instructing pitchers hell-bent on drilling a guy to delay their vengeance until the time is right. What that means, of course, is up for interpretation, and sometimes players interpret wrong.
+
+Joe Musgrove is one of those guys.
+
+In the top of the seventh inning, Arizona’s Braden Shipley buried a 96-mph fastball into the top of Josh Harrison's shoulder blade, just missing his head. The blow eventually knocked Harrison from the game. Shipley then sent another fastball near Austin Meadows' head before getting him to fly out to center field.
+
+That was enough for Musgrove, who responded in kind in the bottom half of the frame. What the Pirates right-hander had working in his favor was a 5-0 lead, plus the fact that he’d given up only four hits and no walks to that point. Musgrove was cruising, and so felt little need to wait until two were out, as is standard operating procedure in these types of situations.
+
+He drilled leadoff hitter Chris Owings (appropriately, below the belt), and everything went immediately to hell. Musgrove then wild-pitched Owings to second. Nick Ahmed singled in Owings, cutting Pittsburgh’s lead to 5-1. Shipley, hitting for himself, reached on a throwing error by third baseman David Freese (who inexplicably rushed his throw), and that was all for Musgrove. Reliever Edgar Santana was greeted with an RBI single by Daniel Descalso. Now the score was 5-2. One out later, Jake Lamb hit a three-run homer, tying the game. Arizona scored four more in the eighth to win it, 9-5.
+
+One HBP changed the game. And Brandon Webb would not have handled as Joe Musgrove did. pic.twitter.com/Fh1Dm5ObPE
+— FOX Sports Arizona (@FOXSPORTSAZ) June 12, 2018
+
+“That's how the game is played,” said Musgrove after the game, straddling the line of self-incrimination in an MLB.com report. “You're willing to go out and hit somebody, you've got to be willing to deal with what might come with that, putting the leadoff runner on base, especially late in the game like that. You don't want to start a rally."
+
+At least his manager had his back. "You play the game and you protect your teammates," said Clint Hurdle. "It's been going on for 135 years or so." (It also appeared that the umpires had the pitcher's back, failing to issue warnings after Musgrove drilled Owings in clear retaliation.)
+
+The fateful HBP was actually one of five in the game, two coming from Arizona relievers, and three from Musgrove. Save for the final one, to which the pitcher all but admitted, intent behind the preceding four is strictly conjecture. Even if Shipley's two pitches (the fateful one to Harrison, and the nearly fateful one to Meadows) were strictly accidental, the idea of a pitcher taking liberties around the head with a blazing fastball over which he has little control is rightly infuriating to opponents. Calmer pitchers than Musgrove have been inspired toward retaliation by less.
+
+This actually has been a theme of sorts around the Pirates clubhouse of late. Two weeks ago, Anthony Rizzo took out Pittsburgh catcher Elias Diaz with a wide slide. After reliever Richard Rodriguez didn't so much as pitch inside to Rizzo during his next at-bat, Musgrove took things into his own hands the following day, barreling into Cubs second baseman Javier Baez with a retaliatory slide into second.  “Trust me, we’ve talked about it,” said Pirates pitcher Jameson Taillon in the Athletic. “We’ve had internal discussions.”
+
+Taillon spent a few minutes after the game discussing the merits of retaliation. He doesn't necessarily speak for the Pirates as a whole, but as of right now he's the guy going on the record in any kind of depth.
+
+“They can say the ball slipped, but it’s not our job to judge intent," he said. "All I can tell you is J-Hay [Harrison] gets pitched in a lot. And even if it’s not on purpose, J-Hay gets hit way too much. I get sick of seeing him get spun around up there—sick of it. Something needs to be done by the staff, and Joe did it for us.”
+
+That, of course, doesn't much matter in the face of the ensuing meltdown by Pittsburgh's bullpen.
+
+“I don’t really know what’s going on inside their dugout, but if it was retaliation, it certainly cost their pitcher a couple of runs and it might have cost them a win,” Arizona manager Tory Lovullo said in an Arizona Republic report. “We were lying flat and dormant and being dominated by him, and I felt like it gave our dugout a lot of energy.”
+
+That much is certain. Musgrove might not change a thing if he had it all to do over again, but given the results of his approach, it's tough to deny that one can never be too careful in this type of situation.
+ 
+ 
+Jason Turbow | June 12, 2018 at 9:12 am 
+
+	 
+#### What is the rarest play in baseball?
+
+David Maciel, Red Sox fan since 1966. Giants and Pirates fan since 1968.
+
+One of the rarest plays that could ever occur would be by a rookie at his first plate appearance, with the bases loaded, on the very first pitch he saw… hitting a grand slam! The last time this happened was on 2010.06.12 by Daniel Nava of the Boston Red Sox.
+
+Nava is only the fourth player in MLB history to hit a grand slam in his first major league at bat and the second to do it on the first pitch.
+
+Daniel Nava - Wikipedia
+
+[Source](https://www.quora.com/)
+
+\newpage
+
+# Rockies Dashboard
+## Win Loss Margin
+
+One of the many ways to visualize a teams performance is to show wins and losses as the margin of the win (positive) or loss (negative).  In the graphs below, we show the current season performance.  For emphasis, wins are displayed in green (above the zero) and losses in red (below).
+
+Following the current season's graph, I have included the Win/Loss margin chart for our benchmark season of 2007 when the Rockies won the National League pennant.  
+
+```{r GBG18}
+GBG18 <- suppressWarnings(getRockiesGBG(2018))
+
+# Calculate Cumulative Wins and Losses
+GBG18 <- GBG18 %>%  
+  mutate(WinG = ifelse( grepl('W',GBG18$'W/L'), 1, 0)) %>% 
+  mutate(LossG = ifelse(grepl('L',GBG18$'W/L'),1,0))
+GBG18 <- GBG18 %>% mutate(C.WinG = cumsum(WinG)) %>%
+      mutate(C.LossG = cumsum(LossG)) %>%
+      mutate(Date.Full = as.Date(paste(trimws(GBG18$Date), ", 2018", sep =""), 
+                                 format ="%B %d, %Y"))
+```
+
+```{r WinLossMargin18,fig.height=3.5,fig.width=6.5}
+
+# Produce Win/Loss Margin Plot
+
+GBG18$Date <- trimws(GBG18$Date)
+D <- tibble(Date = GBG18$Date, Year = 2018, WLMargin = GBG18$R - GBG18$RA, 
+            DN = GBG18$`D/N`, HA = GBG18$`H/A`, WLsign = " ")
+D <- D %>% separate(Date, into = c("Month", "Day"), sep =" ")
+
+D$WLsign <-  ifelse(D$WLMargin < 0, "Loss", "Win")
+
+
+D$Month <- match(tolower(D$Month), tolower(month.abb))
+D$Date <- with(D, as.Date(paste(Year, Month, Day, sep = "/")))
+
+p1 <- ggplot(D, aes(x = Date, y = WLMargin, fill = WLsign)) + 
+  geom_bar(stat = "identity", position = position_dodge(width=0.8)) + 
+  guides(fill=FALSE) +
+  scale_fill_manual(values= c("Win" = "green3", "Loss" = "red")) +
+  scale_x_date(date_breaks = "1 month", date_minor_breaks = "1 week", date_labels = "%B") +
+  ggtitle("Rockies 2018 Win/Loss Margin") + xlab("Game Date") + ylab("Game Margin (runs)")
+
+```
+
+
+```{r GBG07}
+GBG07 <- suppressWarnings(getRockiesGBG(2007))
+
+# Calculate Cumulative Wins and Losses
+GBG07 <- GBG07 %>%  
+  mutate(WinG = ifelse( grepl('W',GBG07$'W/L'), 1, 0)) %>% 
+  mutate(LossG = ifelse(grepl('L',GBG07$'W/L'),1,0))
+GBG07 <- GBG07 %>% mutate(C.WinG = cumsum(WinG)) %>%
+      mutate(C.LossG = cumsum(LossG)) %>%
+      mutate(Date.Full = as.Date(paste(trimws(GBG07$Date), ", 2017", sep =""), 
+                                 format ="%B %d, %Y"))
+```
+
+```{r WinLossMargin07,fig.height=3.5, fig.width=6.5}
+
+# Produce Win/Loss Margin Plot
+
+GBG07$Date <- trimws(GBG07$Date)
+D <- tibble(Date = GBG07$Date, Year = 2007, WLMargin = GBG07$R - GBG07$RA, 
+            DN = GBG07$`D/N`, HA = GBG07$`H/A`)
+D <- D %>% separate(Date, into = c("Month", "Day"), sep =" ")
+D$WLsign = ifelse(D$WLMargin < 0, "Loss", "Win")
+
+D$Month <- match(tolower(D$Month), tolower(month.abb))
+D$Date <- with(D, as.Date(paste(Year, Month, Day, sep = "/")))
+
+p2 <- ggplot(D, aes(x = Date, y = WLMargin, fill = WLsign)) + 
+  geom_bar(stat = "identity", position = position_dodge(width=0.8)) + 
+  guides(fill=FALSE) +
+  scale_fill_manual(values= c("Win" = "green3", "Loss" = "red")) +
+  scale_x_date(date_breaks = "1 month", date_minor_breaks = "1 week", date_labels = "%B") +
+  ggtitle("Rockies 2007 Win/Loss Margin") + xlab("Game Date") + ylab("Game Margin (runs)")
+
+p1
+p2
+```
+
+
+\newpage
+
+### Top Twelve Rockies Players as Measured by WAR
+
+```{r Top12Rockies, cap = "Top Twelve Rockies as Measured by WAR"}
+
+defSalary <- 545000  
+# Get latest Batting and Pitching WAR Data
+if(!exists("batWar")) {batWar <- getDailyBatWar()}
+if(!exists("pitWar")) {pitWar <- getDailyPitWar()}
+
+# Add WAR Field to roster
+url <- 
+  "https://www.baseball-reference.com/teams/COL/2018-roster.shtml#appearances::none"
+doc <- getURL(url)
+cClasses <- c("character", "integer",   "character", "character", "character",
+              "character", "integer",   "character", "integer",   "integer",
+              "integer",   "integer",   "integer",   "integer",   "integer",
+              "integer",   "integer",   "integer",   "integer",   "integer",
+              "integer",   "integer",   "integer",   "integer",   "integer",
+              "integer",   "double",   "character",    "character")
+tables <- suppressWarnings(readHTMLTable(doc, header = TRUE, 
+              stringsAsFactors = FALSE, colClasses = cClasses))
+
+roster <- tables[[2]]
+tnames <- names(roster)
+tnames[3] <- "Nat"
+tnames[28] <- "Note"
+tnames[29] <- "empty"
+colnames(roster) <- tnames
+roster <- as_tibble(roster) 
+
+
+# Salary data not yet populated in baseball-reference roster data
+# # Cleanup Salary field
+# roster$Salary <- suppressWarnings(sapply(roster$Salary, 
+#                     function(xx) as.numeric(gsub('[^0-9]', '', xx))))
+# roster$Salary[is.na(roster$Salary)] <- defSalary
+
+# Separate top players by WAR
+top12 <- head(arrange(roster,desc(WAR)),n = 12) ## %>% mutate(Salary.M = Salary/1e6)
+top12$Rank <- 1:12
+
+#knitr::kable(top12[,c(29,1,2,27)], cap = "Rockies Top 12 Players (WAR)")
+
+ftop <- flextable(select(top12,"Rank","Name", "Age", "WAR"), 
+                  col_keys = c("Rank","Name", "Age", "WAR")) %>%
+       theme_booktabs() %>%
+       bg(bg = HdrBg, part = "header")
+
+autofit(ftop)
+
+```
+
+\newpage
+
+## [National League Standings](http://www.baseball-reference.com/leagues/NL/2017-standings.shtml#expanded_standings_W::none)
+
+
+```{r NLStandings2, results='asis'}
+theurl <- getURL("https://www.baseball-reference.com/leagues/NL/2018-standings.shtml#expanded_standings_W::none")
+tables <- readHTMLTable(theurl)
+tables <- list.clean(tables, fun = is.null, recursive = FALSE)
+n.rows <- unlist(lapply(tables, function(t) dim(t)[1]))
+```
+
+#### NL East Standings
+
+```{r, cap = "National League East Standings"}
+nlE <- flextable(tables$standings_E, 
+                  col_keys = c("Tm", "W", "L", "WL.Pct", "GB")) %>%
+       theme_booktabs() %>%
+       bg(bg = HdrBg, part = "header")
+
+autofit(nlE)
+```
+
+#### NL Central Standings
+
+```{r, cap = "National League Central Standings"}
+nlC <- flextable(tables$standings_C, 
+                  col_keys = c("Tm", "W", "L", "WL.Pct", "GB")) %>%
+       theme_booktabs() %>%
+       bg(bg = HdrBg, part = "header")
+
+autofit(nlC)
+```
+
+
+#### NL West Standings
+
+```{r, cap = "National League West Standings"}
+nlW <- flextable(tables$standings_W, 
+                  col_keys = c("Tm", "W", "L", "WL.Pct", "GB")) %>%
+       theme_booktabs() %>%
+       bg(bg = HdrBg, part = "header")
+
+autofit(nlW)
+```
+
+
+\newpage
+
+## [American League Standings](http://www.baseball-reference.com/leagues/AL/2017-standings.shtml#expanded_standings_W::none)
+
+```{r ALStandings, results = 'asis'}
+
+ALurl <- getURL("https://www.baseball-reference.com/leagues/AL/2018-standings.shtml#expanded_standings_W::none")
+ALStandings <- readHTMLTable(ALurl)
+ALStandings <- list.clean(ALStandings, fun = is.null, recursive = FALSE)
+n.rows <- unlist(lapply(ALStandings, function(t) dim(t)[1]))
+```
+
+
+#### AL East Standings
+
+```{r, cap = "American League East Standings"}
+alE <- flextable(ALStandings$standings_E, 
+                  col_keys = c("Tm", "W", "L", "WL.Pct", "GB")) %>%
+       theme_booktabs() %>%
+       bg(bg = HdrBg, part = "header")
+
+autofit(alE)
+```
+
+#### AL Central Standings
+
+```{r, cap = "American League Central Standings"}
+alC <- flextable(ALStandings$standings_C, 
+                  col_keys = c("Tm", "W", "L", "WL.Pct", "GB")) %>%
+       theme_booktabs() %>%
+       bg(bg = HdrBg, part = "header")
+
+autofit(alC)
+```
+
+
+#### NL West Standings
+
+```{r, cap = "American League West Standings"}
+alW <- flextable(ALStandings$standings_W, 
+                  col_keys = c("Tm", "W", "L", "WL.Pct", "GB")) %>%
+       theme_booktabs() %>%
+       bg(bg = HdrBg, part = "header")
+
+autofit(alW)
+```
+
+
+\newpage
+
+## Rockies Game-by-Game Schedule/Results
+
+```{r GBGResults, results = 'asis', cap = "Rockies Game-by-Game Schedule/Results" }
+GBG18 <- getRockiesGBG(2018) 
+GBG18 <- filter(GBG18, Win != " ") %>%
+  filter(Win != "Win")
+#knitr::kable(GBG18)
+GBG18 <- GBG18 %>% rename(Gm.Num = `Gm#`, HA = "H/A", WL = "W/L", DN = "D/N") %>% select(-14)
+gbg <- flextable(GBG18, 
+                  col_keys = c("Gm.Num", "Day", "Date", "HA", "Opp", "WL", "R", "RA", 
+                               "Win", "Loss", "Save", "DN", "Streak")) %>%
+       theme_booktabs() %>%
+       bg(bg = HdrBg, part = "header")
+
+autofit(gbg)
+```
+
+
+The Rockies current record is `r Current$Wins` Wins and `r Current$Losses` Losses.  So far, the Rockies have scored `r TotalR` runs and have had `r TotalRA` runs scored against them.
+
+\newpage
+
+## Pythagorean Win-Loss Theorem
+$$ predicted W\% = \frac{R^k}{R^k+RA^k}   $$
+```{r PredWin, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+# Build Table of Pythagorean Win Predictions for 2018
+PredictedWins <- tibble(
+  W181   = round(TotalR^1.81/(TotalR^1.81+TotalRA^1.81)*162),
+  W183   = round(TotalR^1.83/(TotalR^1.83+TotalRA^1.83)*162),
+  W200   = round(TotalR^2.00/(TotalR^2.00+TotalRA^2.00)*162))
+```
+
+Using the commonly used values of k, the Rockies predicted wins for the 2017 are shown in the table below.  Remember this statistic will vary widely over the course of the season.
+
+```{r PredWins, echo=FALSE, message=FALSE, warning=FALSE, results='asis', cap = "Pythagorean Win Results"}
+
+pred <- flextable( data = PredictedWins, col_keys = c("W181", "W183", "W200") ) %>%
+ add_header(W181 = "Wins (k =1.81)", W183 = "Wins (k=1.83)", W200 = "Wins (k=2.0)") %>%
+       theme_booktabs() %>% 
+       bg(bg = HdrBg, part = "header")
+          
+autofit(pred)
+```
+
+\newpage
+
+## Batting Statistics (non-pitchers)
+
+#### Batting Statistics (1 of 2)
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, results= 'asis', cap = "Batting Statistics (1 of 2)"}
+
+burl <- 
+  getURL("https://www.baseball-reference.com/teams/COL/2018.shtml#team_batting::none")
+
+  TeamStats <- readHTMLTable(burl)
+  TeamStats <- list.clean(TeamStats, fun = is.null, recursive = FALSE)
+  TeamBatting <- as_tibble(TeamStats$team_batting) %>%
+       separate(Name, into = c("First", "Name"), sep =" ")
+  
+#
+# ---------------------------------->>  Rockies Batting Statistics (1 of 2)  
+#  
+  TEAMB <- TeamBatting %>% 
+  select(c(1,2,4,5,6,8,9,10,11,12,13, 14, 15, 16, 17)) %>%   
+  filter(Rk != "Rk" & Pos != "P") %>%
+    rename("TwoB" = "2B", "ThreeB" = "3B")
+
+ftTeamB <- flextable( data = TEAMB, col_keys = c(names(TEAMB)) ) %>%
+       theme_booktabs() %>% 
+       bg(bg = HdrBg, part = "header")
+          
+autofit(ftTeamB)
+```
+
+#### Batting Statistics (2 of 2)
+
+```{r, cap = "Batting Statistics (2 of 2)"}
+
+#
+# ---------------------------------->>  Rockies Batting Statistics (2 of 2)
+#
+TEAMB2 <- TeamBatting %>% 
+  select(c(1,2,4,5,18,19,20,21,22,23:29)) %>%   
+  filter(Rk != "Rk" & Pos != "P") %>%
+  rename("OPSplus" = "OPS+")
+
+ftTeamB2 <- flextable( data = TEAMB2, col_keys = c(names(TEAMB2)) ) %>%
+       theme_booktabs() %>% 
+       bg(bg = HdrBg, part = "header")
+
+autofit(ftTeamB2)
+```
+
+* \* - bats left-handed, # - bats both, else - bats right, ? - unknown; OPS_lg for OPS+ does not include pitchers.
+
+\newpage
+
+## Pitching Statistics
+
+#### Rockies Pitching Statistics (1 of 2)
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, results='asis', cap = "Pitching Statistics (1 of 2)"}
+
+PitchUrl <- 
+  getURL("http://www.baseball-reference.com/teams/COL/2018.shtml#team_pitching::none")
+
+  PitchStats <- readHTMLTable(PitchUrl)
+  PitchStats <- list.clean(PitchStats, fun = is.null, recursive = FALSE)
+ 
+#
+# ----------------------------------->> Rockies pitching statistics (1 of 2).
+#
+TeamPitching <- as_tibble(TeamStats$team_pitching) %>%
+       separate(Name, into = c("First", "Name"), sep =" ")
+
+TEAMP <- TeamPitching %>%   
+  filter(Rk != "Rk") %>%
+  select(c(1,2, 4, 5:18)) %>%
+  rename("WLpct" = "W-L%")
+  
+ftTeamP <- flextable( data = TEAMP, col_keys = c(names(TEAMP)) ) %>%
+       theme_booktabs() %>% 
+       bg(bg = HdrBg, part = "header")
+          
+autofit(ftTeamP)
+```
+
+#### Rockies Pitching Statistics (2 of 2)
+
+```{r, cap = "Pitching Statistics (2 of 2)"}
+  
+#
+# ----------------------------------->> Rockies pitching statistics (2 of 2).
+#
+TEAMP2 <- TeamPitching %>%
+  filter(Rk != "Rk")  %>%
+  select(c(1,2, 4, 19:30)) %>%
+  rename("ERAplus" = "ERA+")
+
+ftTeamP2 <- flextable( data = TEAMP2, col_keys = c(names(TEAMP2)) ) %>%
+       theme_booktabs() %>% 
+       bg(bg = HdrBg, part = "header")
+          
+autofit(ftTeamP2)
+
+```
+
+  \* - throws left-handed
+
+\newpage
+
+#### National League Team Standard Batting (1 of 2)
+
+```{r,cap = "NL Team Batting statistics (1 of 2)."}
+NLTeamBatUrl <- 
+  getURL("https://www.baseball-reference.com/leagues/NL/2018.shtml#teams_standard_batting::3")
+
+C.Classes <- c("character", "integer", rep("double",2), rep("integer",13), 
+               rep("double",4), rep("integer",8))
+
+BatStats <- readHTMLTable(NLTeamBatUrl,stringsAsFactors = FALSE, colClasses = C.Classes)
+BatStats <- list.clean(BatStats, fun = is.null, recursive = FALSE)
+NLBatStats <- as_tibble(BatStats$teams_standard_batting, as.factor = FALSE)
+  
+TEAMB <- NLBatStats %>% 
+  arrange(desc(NLBatStats$'R/G')) %>%  
+  select(c(1:4, 5:17)) %>%
+  rename("NumBat" = "#Bat", "RperG"= "R/G", "TwoB" = "2B", "ThreeB" = "3B")
+
+ftTeamB <- flextable( data = TEAMB, col_keys = c(names(TEAMB)) ) %>%
+       theme_booktabs() %>% 
+       bg(bg = HdrBg, part = "header")
+          
+autofit(ftTeamB)
+
+```
+
+
+#### National League Team Standard Batting (2 of 2)
+
+```{r, cap = "NL Team Batting statistics (2 of 2)."}
+
+#knitr::kable(TEAMB, caption = "NL Team Batting statistics (1 of 2).")
+
+TEAMB2 <- NLBatStats %>% 
+  arrange(desc(NLBatStats$'R/G')) %>%  
+  select(c(1:4, 18:29)) %>%
+  rename("NumBat" = "#Bat", "RperG"= "R/G", "OPSplus" = "OPS+")
+
+ftTeamB2 <- flextable( data = TEAMB2, col_keys = c(names(TEAMB2)) ) %>%
+       theme_booktabs() %>% 
+       bg(bg = HdrBg, part = "header")
+          
+autofit(ftTeamB2)
+
+
+#knitr::kable(TEAMB, caption = "NL Team Batting statistics (2 of 2).")
+
+
+```
+
+
+
+\newpage
+
+#### Current Injuries
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, results= 'asis', cap ="Current Player Injuries"}
+injUrl <- "https://www.baseball-reference.com/teams/COL/2018.shtml#all_injuries"
+injDoc <- getURL(injUrl)
+Tables <- readHTMLTable(injDoc)
+## Temporary Code to Display Injury Report until I figure out how 
+## to use the URL provided
+## Baseball-Reference.com (above).
+  Injuries <- read_excel("./data/Rockies_Injuries.xlsx")
+  
+  Injuries <- select(Injuries,c(1,3,4,5)) 
+  Injuries <-  rename(Injuries, Updated = Last.Updated, 
+                      Type = Injury.Type, Details = Injury.Details)
+  
+  injuryRep <- flextable( data = Injuries, col_keys = c(names(Injuries)) ) %>%
+       theme_booktabs() %>% 
+       bg(bg = HdrBg, part = "header")
+          
+autofit(injuryRep)
+
+```
+
+Run date time: `r Sys.time()`
